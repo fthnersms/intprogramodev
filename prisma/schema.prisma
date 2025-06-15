@@ -1,0 +1,91 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  phone     String?
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+
+  // Relations
+  appointments     Appointment[]
+  sentMessages     Message[] @relation("MessageSender")
+  receivedMessages Message[] @relation("MessageReceiver")
+
+  @@map("users")
+}
+
+model Appointment {
+  id        String            @id @default(cuid())
+  userId    String?
+  name      String
+  email     String
+  phone     String
+  date      DateTime
+  time      String
+  service   String
+  notes     String?
+  status    AppointmentStatus @default(PENDING)
+  createdAt DateTime          @default(now())
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("appointments")
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  content    String
+  senderId   String
+  receiverId String
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  // Relations
+  sender   User @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("MessageReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("contact_messages")
+}
+
+
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum AppointmentStatus {
+  PENDING
+  APPROVED
+  CANCELLED
+  COMPLETED
+}

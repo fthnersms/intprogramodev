@@ -1,0 +1,51 @@
+<svg width="400" height="200" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .tooth-outline { 
+        fill: none; 
+        stroke: #6B21A8; 
+        stroke-width: 8; 
+        stroke-linecap: round; 
+        stroke-linejoin: round; 
+      }
+      .tooth-fill { 
+        fill: #6B21A8; 
+      }
+      .text-main { 
+        fill: #6B21A8; 
+        font-family: 'Times New Roman', serif; 
+        font-weight: bold; 
+        font-size: 72px;
+        letter-spacing: 2px;
+      }
+      .text-subtitle { 
+        fill: #6B21A8; 
+        font-family: 'Times New Roman', serif; 
+        font-style: italic; 
+        font-size: 28px;
+        letter-spacing: 1px;
+      }
+    </style>
+  </defs>
+  
+  <!-- Tooth Design -->
+  <g transform="translate(30, 40)">
+    <!-- Main tooth shape -->
+    <path class="tooth-outline" d="M20 40 Q15 25, 25 15 Q35 8, 50 15 Q65 25, 60 40 Q58 55, 50 70 Q45 85, 40 95 Q35 85, 30 70 Q22 55, 20 40 Z"/>
+    
+    <!-- Dental tool/mirror handle -->
+    <path class="tooth-outline" d="M65 25 Q75 20, 85 25 Q95 30, 85 35 Q75 30, 65 25"/>
+    
+    <!-- Handle connection -->
+    <line class="tooth-outline" x1="65" y1="25" x2="80" y2="10" stroke-width="6"/>
+    
+    <!-- Mirror/tool tip -->
+    <circle class="tooth-outline" cx="85" cy="5" r="12" stroke-width="6"/>
+  </g>
+  
+  <!-- DYENT Text -->
+  <text x="140" y="110" class="text-main">DYENT</text>
+  
+  <!-- Dilruba Yiğit Subtitle -->
+  <text x="140" y="150" class="text-subtitle">Dilruba Yiğit</text>
+</svg> 
