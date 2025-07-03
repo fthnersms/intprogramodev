@@ -115,12 +115,7 @@ export default function Services() {
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
             Dr. Dilruba Yiğit ile diş sağlığınız için en uygun tedavi planını belirleyin
           </p>
-          <a 
-            href="/auth/login" 
-            className="bg-gray-900 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-gray-800 transition-colors inline-block"
-          >
-            Randevu Al
-          </a>
+         
         </div>
       </section>
     </div>

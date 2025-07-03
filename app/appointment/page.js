@@ -44,6 +44,14 @@ export default function Appointment() {
       const response = await fetch('/api/auth/me')
       if (response.ok) {
         const userData = await response.json()
+        
+        // Check if user is allowed to make appointments (only USER role)
+        if (userData.role !== 'USER') {
+          alert('⚠️ Sadece hasta kullanıcıları randevu alabilir.')
+          window.location.href = '/dashboard'
+          return
+        }
+        
         setUser(userData)
         // Auto-fill form with user data
         setFormData(prev => ({

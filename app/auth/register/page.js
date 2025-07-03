@@ -44,8 +44,8 @@ export default function Register() {
       const data = await response.json()
 
       if (response.ok) {
-        // Refresh the page to update auth state in navbar
-        window.location.href = '/dashboard'
+        // Redirect to homepage after successful registration
+        window.location.href = '/'
       } else {
         setError(data.error || 'Kayıt sırasında bir hata oluştu')
       }

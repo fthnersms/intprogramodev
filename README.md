@@ -1,37 +1,96 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# DYENT - Diş Hekimliği Randevu Sistemi
 
-## Getting Started
+## 📋 Proje Hakkında
 
-First, run the development server:
+DYENT, modern diş hekimliği hizmetleri için geliştirilmiş kapsamlı bir web tabanlı randevu ve hasta yönetim sistemidir. Dr. Dilruba Yiğit'in kliniği için özel olarak tasarlanmış bu sistem, hastaların kolayca randevu alabilmesini ve doktorlarla iletişim kurabilmesini sağlar.
 
+## 🚀 Özellikler
+
+### 👥 Kullanıcı Rolleri
+- **Hasta (USER)**: Randevu oluşturma, mesajlaşma ve randevu geçmişini görüntüleme
+- **Doktor (DOCTOR)**: Hasta mesajlarını yönetme, randevuları görüntüleme
+- **Yönetici (ADMIN)**: Tüm sistem yönetimi, kullanıcı ve randevu kontrolü
+
+### 📅 Randevu Sistemi
+- Online randevu oluşturma
+- Randevu durumu takibi (Beklemede, Onaylandı, Tamamlandı)
+- Tarih ve saat seçimi
+- Hizmet seçimi
+- Randevu notları ekleme
+
+### 💬 Mesajlaşma Sistemi
+- Hasta-Doktor arası güvenli iletişim
+- Gerçek zamanlı mesaj bildirimleri
+- Mesaj okundu durumu
+
+### 🏥 Sunulan Hizmetler
+- Genel Muayene
+- Diş Temizliği
+- Dolgu
+- Kanal Tedavisi
+- Diş Çekimi
+- Diş Beyazlatma
+- İmplant Konsültasyonu
+- Estetik Diş Hekimliği
+- Çocuk Diş Hekimliği
+
+## 🛠️ Teknik Altyapı
+
+### Kullanılan Teknolojiler
+- **Frontend**: Next.js, React, TailwindCSS
+- **Backend**: Next.js API Routes
+- **Veritabanı**: SQLite (Prisma ORM)
+- **Kimlik Doğrulama**: JWT (JSON Web Tokens)
+
+### Sistem Gereksinimleri
+- Node.js 18.0 veya üzeri
+- npm veya yarn paket yöneticisi
+
+## 🚀 Kurulum
+
+1. Projeyi klonlayın:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone [repo-url]
+cd dishekim
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Bağımlılıkları yükleyin:
+```bash
+npm install
+# veya
+yarn install
+```
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+3. Veritabanını oluşturun:
+```bash
+npx prisma migrate dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Örnek verileri yükleyin:
+```bash
+npm run seed
+# veya
+yarn seed
+```
 
-## Learn More
+5. Uygulamayı başlatın:
+```bash
+npm run dev
+# veya
+yarn dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+## 👤 Demo Hesapları
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Admin/Doktor Hesabı**:
+  - E-posta: admin@dyent.com
+  - Şifre: admin123
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## 🔒 Güvenlik
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- JWT tabanlı kimlik doğrulama
+- Şifreli parola saklama (bcrypt)
+- Role dayalı erişim kontrolü
+- HTTPS üzerinden güvenli iletişim
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# intprogramodev

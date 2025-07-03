@@ -30,8 +30,8 @@ export default function Login() {
       const data = await response.json()
 
       if (response.ok) {
-        // Refresh the page to update auth state in navbar
-        window.location.href = '/dashboard'
+        // Redirect to homepage after successful login
+        window.location.href = '/'
       } else {
         setError(data.error || 'Giriş sırasında bir hata oluştu')
       }
@@ -127,14 +127,7 @@ export default function Login() {
             </Link>
           </div>
 
-          {/* Demo Hesapları */}
-          <div className="border-t border-gray-200 pt-6">
-            <p className="text-xs text-gray-500 text-center mb-3">Demo Hesapları:</p>
-            <div className="text-xs text-gray-600 space-y-1">
-              <p><strong>Admin:</strong> admin@dyent.com / admin123</p>
-              <p><strong>Kullanıcı:</strong> user@dyent.com / user123</p>
-            </div>
-          </div>
+        
         </form>
       </div>
     </div>

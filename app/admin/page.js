@@ -7,11 +7,13 @@ export default function AdminPanel() {
   const [user, setUser] = useState(null)
   const [appointments, setAppointments] = useState([])
   const [messages, setMessages] = useState([])
+  const [users, setUsers] = useState([])
+  const [activeTab, setActiveTab] = useState('appointments')
   const [stats, setStats] = useState({
     totalAppointments: 0,
     pendingAppointments: 0,
     todayAppointments: 0,
-    totalMessages: 0
+    totalUsers: 0
   })
   const [isLoading, setIsLoading] = useState(true)
   const [isUpdating, setIsUpdating] = useState(false)
@@ -61,16 +63,15 @@ export default function AdminPanel() {
       const appointmentsResponse = await fetch('/api/appointments')
       const appointmentsData = appointmentsResponse.ok ? await appointmentsResponse.json() : []
       
-      // Fetch contact messages from API
-      const messagesResponse = await fetch('/api/contact-messages')
-      const messagesData = messagesResponse.ok ? await messagesResponse.json() : []
+      // Fetch all users from API
+      const usersResponse = await fetch('/api/admin/users')
+      const usersData = usersResponse.ok ? await usersResponse.json() : []
 
       setAppointments(appointmentsData)
-      setMessages(messagesData)
+      setUsers(usersData)
       
-      // Calculate stats from real data with unread messages count
+      // Calculate stats from real data
       const today = new Date().toDateString()
-      const unreadMessages = messagesData.filter(msg => !msg.isRead).length
       
       setStats({
         totalAppointments: appointmentsData.length,
@@ -78,8 +79,7 @@ export default function AdminPanel() {
         todayAppointments: appointmentsData.filter(a => 
           new Date(a.date).toDateString() === today
         ).length,
-        totalMessages: messagesData.length,
-        unreadMessages: unreadMessages
+        totalUsers: usersData.length
       })
       
       setLastUpdated(new Date())
@@ -125,7 +125,6 @@ export default function AdminPanel() {
         )
         
         const today = new Date().toDateString()
-        const unreadMessages = messages.filter(msg => !msg.isRead).length
         
         setStats({
           totalAppointments: updatedAppointments.length,
@@ -133,8 +132,7 @@ export default function AdminPanel() {
           todayAppointments: updatedAppointments.filter(a => 
             new Date(a.date).toDateString() === today
           ).length,
-          totalMessages: messages.length,
-          unreadMessages: unreadMessages
+          totalUsers: users.length
         })
       } else {
         const errorData = await response.json()
@@ -216,6 +214,37 @@ export default function AdminPanel() {
     }
   }
 
+  const updateUserRole = async (userId, newRole) => {
+    try {
+      const response = await fetch(`/api/admin/users/${userId}/role`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ role: newRole })
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        // Update users state
+        setUsers(prev => 
+          prev.map(user => 
+            user.id === userId 
+              ? { ...user, role: newRole }
+              : user
+          )
+        )
+        alert(`✅ ${data.message}`)
+      } else {
+        alert(`❌ ${data.error}`)
+      }
+    } catch (error) {
+      console.error('Failed to update user role:', error)
+      alert('❌ Rol güncellenirken bir hata oluştu')
+    }
+  }
+
   const getStatusColor = (status) => {
     switch (status) {
       case 'PENDING': return 'bg-white text-black border border-gray-400'
@@ -233,6 +262,24 @@ export default function AdminPanel() {
       case 'CANCELLED': return 'İptal Edildi'
       case 'COMPLETED': return 'Tamamlandı'
       default: return status
+    }
+  }
+
+  const getRoleColor = (role) => {
+    switch (role) {
+      case 'ADMIN': return 'bg-red-100 text-red-800 border border-red-200'
+      case 'DOCTOR': return 'bg-blue-100 text-blue-800 border border-blue-200'
+      case 'USER': return 'bg-gray-100 text-gray-800 border border-gray-200'
+      default: return 'bg-gray-100 text-gray-800 border border-gray-200'
+    }
+  }
+
+  const getRoleText = (role) => {
+    switch (role) {
+      case 'ADMIN': return 'Admin'
+      case 'DOCTOR': return 'Doktor'
+      case 'USER': return 'Hasta'
+      default: return role
     }
   }
 
@@ -294,7 +341,7 @@ export default function AdminPanel() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid md:grid-cols-5 gap-6 mb-8">
+        <div className="grid md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 relative">
             <div className="text-gray-600 text-3xl mb-3">📅</div>
             <h3 className="text-2xl font-light text-gray-900">{stats.totalAppointments}</h3>
@@ -319,24 +366,40 @@ export default function AdminPanel() {
           </div>
 
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-            <div className="text-gray-600 text-3xl mb-3">💬</div>
-            <h3 className="text-2xl font-light text-gray-900">{stats.totalMessages}</h3>
-            <p className="text-gray-600 text-sm">Toplam Mesaj</p>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 relative">
-            <div className="text-orange-600 text-3xl mb-3">🔔</div>
-            <h3 className="text-2xl font-light text-gray-900">{stats.unreadMessages || 0}</h3>
-            <p className="text-gray-600 text-sm">Okunmamış Mesaj</p>
-            {stats.unreadMessages > 0 && (
-              <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                !
-              </div>
-            )}
+            <div className="text-gray-600 text-3xl mb-3">👥</div>
+            <h3 className="text-2xl font-light text-gray-900">{stats.totalUsers}</h3>
+            <p className="text-gray-600 text-sm">Toplam Kullanıcı</p>
           </div>
         </div>
 
-        {/* Appointments Table */}
+        {/* Tab Navigation */}
+        <div className="mb-8">
+          <nav className="flex space-x-8">
+            <button
+              onClick={() => setActiveTab('appointments')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'appointments'
+                  ? 'border-gray-900 text-gray-900'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              📅 Randevular ({stats.totalAppointments})
+            </button>
+            <button
+              onClick={() => setActiveTab('users')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'users'
+                  ? 'border-gray-900 text-gray-900'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              👥 Kullanıcı Yönetimi ({stats.totalUsers})
+            </button>
+          </nav>
+        </div>
+
+        {/* Tab Content */}
+        {activeTab === 'appointments' && (
         <div className="bg-white rounded-lg shadow-sm border border-gray-100">
           <div className="p-6 border-b border-gray-100">
             <h2 className="text-xl font-medium text-gray-900">Randevular</h2>
@@ -432,63 +495,117 @@ export default function AdminPanel() {
             </table>
           </div>
         </div>
+        )}
 
-        {/* Messages Section */}
-        <div className="mt-8 bg-white rounded-lg shadow-sm border border-gray-100">
+        {/* Users Management Section */}
+        {activeTab === 'users' && (
+        <div className="bg-white rounded-lg shadow-sm border border-gray-100">
           <div className="p-6 border-b border-gray-100">
-            <h2 className="text-xl font-medium text-gray-900">Hasta Mesajları</h2>
+            <h2 className="text-xl font-medium text-gray-900">Kullanıcı Yönetimi</h2>
+            <div className="mt-2 space-y-1">
+              <p className="text-sm text-gray-600">Sadece admin kullanıcıları rol değişikliği yapabilir</p>
+              <p className="text-sm text-amber-600 bg-amber-50 p-2 rounded-lg border border-amber-200">
+                🔒 <strong>Güvenlik:</strong> Admin yetkisi sadece sistem tarafından verilebilir. Başka admin oluşturamazsınız.
+              </p>
+            </div>
           </div>
-          <div className="p-6">
-            {messages.length === 0 ? (
-              <div className="text-center py-8">
-                <div className="text-4xl mb-2">💬</div>
-                <p className="text-gray-500">Henüz mesaj bulunmuyor</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {messages.map((message) => (
-                  <div 
-                    key={message.id} 
-                    className={`p-4 rounded-lg border transition-colors ${
-                      message.isRead 
-                        ? 'bg-gray-50 border-gray-200' 
-                        : 'bg-blue-50 border-blue-200'
-                    }`}
-                  >
-                    <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <h3 className="font-medium text-gray-900">{message.name}</h3>
-                        <p className="text-sm text-gray-600">{message.email}</p>
-                        <p className="text-sm text-gray-600">{message.phone}</p>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Kullanıcı
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    İletişim
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Rol
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    İstatistikler
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    İşlemler
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {users.length === 0 ? (
+                  <tr>
+                    <td colSpan="5" className="px-6 py-8 text-center text-gray-500">
+                      <div className="text-4xl mb-2">👥</div>
+                      <p>Henüz kullanıcı bulunmuyor</p>
+                    </td>
+                  </tr>
+                ) : (
+                  users.map((userItem) => (
+                  <tr key={userItem.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 h-10 w-10">
+                          <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                            <span className="text-gray-600 font-medium text-sm">
+                              {userItem.name.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900">{userItem.name}</div>
+                          <div className="text-sm text-gray-500">
+                            Kayıt: {new Date(userItem.createdAt).toLocaleDateString('tr-TR')}
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="text-xs text-gray-500">
-                          {new Date(message.createdAt).toLocaleDateString('tr-TR')} - {new Date(message.createdAt).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
-                        </p>
-                        {!message.isRead && (
-                          <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full mt-1">
-                            Okunmadı
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="mb-3">
-                      <p className="text-gray-800">{message.message}</p>
-                    </div>
-                    {!message.isRead && (
-                      <button
-                        onClick={() => markMessageAsRead(message.id)}
-                        className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all shadow-sm"
-                      >
-                        ✓ Okundu İşaretle
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">{userItem.email}</div>
+                      <div className="text-sm text-gray-500">{userItem.phone || 'Telefon yok'}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleColor(userItem.role)}`}>
+                        {getRoleText(userItem.role)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <div>📅 {userItem._count?.appointments || 0} randevu</div>
+                      <div>💬 {(userItem._count?.sentMessages || 0) + (userItem._count?.receivedMessages || 0)} mesaj</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                             {userItem.id !== user?.id ? (
+                         <div className="flex space-x-2">
+                           {userItem.role !== 'DOCTOR' && userItem.role !== 'ADMIN' && (
+                             <button
+                               onClick={() => updateUserRole(userItem.id, 'DOCTOR')}
+                               className="text-blue-700 font-medium border-2 border-blue-200 px-2 py-1 rounded text-xs hover:bg-blue-100 bg-blue-50"
+                             >
+                               👨‍⚕️ Doktor Yap
+                             </button>
+                           )}
+                           {userItem.role === 'DOCTOR' && (
+                             <button
+                               onClick={() => updateUserRole(userItem.id, 'USER')}
+                               className="text-gray-700 font-medium border-2 border-gray-200 px-2 py-1 rounded text-xs hover:bg-gray-100 bg-gray-50"
+                             >
+                               👤 Hasta Yap
+                             </button>
+                           )}
+                           {userItem.role === 'ADMIN' && (
+                             <span className="text-red-400 text-xs">Admin yetkisi değiştirilemez</span>
+                           )}
+                         </div>
+                       ) : (
+                         <span className="text-gray-400 text-xs">Kendi rolünüzü değiştiremezsiniz</span>
+                       )}
+                    </td>
+                  </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
+        )}
       </div>
     </div>
   )

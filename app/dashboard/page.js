@@ -116,7 +116,7 @@ export default function Dashboard() {
             <div className="text-gray-600 text-3xl mb-3">💬</div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">Mesajlar</h3>
             <p className="text-gray-600 text-sm">
-              {messages.filter(m => !m.read).length} okunmamış mesaj
+              {messages.filter(m => !m.read).length} mesaj
             </p>
           </Link>
 

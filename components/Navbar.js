@@ -74,10 +74,12 @@ export default function Navbar() {
                   <>
                     <div className="h-6 w-px bg-gray-200 mx-2"></div>
                     
-                    <Link href="/appointment" className="text-gray-600 hover:text-gray-900 font-medium transition-colors text-sm">
-                      Randevu
-                    </Link>
-                    {user.role !== 'ADMIN' && (
+                    {user.role === 'USER' && (
+                      <Link href="/appointment" className="text-gray-600 hover:text-gray-900 font-medium transition-colors text-sm">
+                        Randevu
+                      </Link>
+                    )}
+                    {user.role === 'USER' && (
                       <Link href="/dashboard" className="text-gray-600 hover:text-gray-900 font-medium transition-colors text-sm">
                         Profilim
                       </Link>
@@ -87,8 +89,8 @@ export default function Navbar() {
                     </Link>
                     
                     {user.role === 'ADMIN' && (
-                      <Link href="/admin" className="bg-gradient-to-r from-gray-100 to-gray-200 text-gray-900 px-4 py-2 rounded-lg font-medium transition-all text-sm hover:from-gray-200 hover:to-gray-300 shadow-sm">
-                        Yönetim
+                      <Link href="/admin" className="bg-gradient-to-r from-red-100 to-red-200 text-red-900 px-4 py-2 rounded-lg font-medium transition-all text-sm hover:from-red-200 hover:to-red-300 shadow-sm">
+                        👑 Yönetim
                       </Link>
                     )}
 
@@ -111,12 +113,7 @@ export default function Navbar() {
                   <>
                     <div className="h-6 w-px bg-gray-200 mx-2"></div>
                     
-                    <Link 
-                      href="/auth/login" 
-                      className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-6 py-2 rounded-lg hover:from-emerald-600 hover:to-emerald-700 transition-all font-medium text-sm shadow-md hover:shadow-lg"
-                    >
-                      Randevu Al
-                    </Link>
+                  
                     <Link 
                       href="/auth/login" 
                       className="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg font-medium transition-all text-sm hover:bg-blue-100 border border-blue-200 shadow-sm"
@@ -198,18 +195,20 @@ export default function Navbar() {
                 {user ? (
                   // Mobile authenticated menu
                   <>
-                    <div className="px-3 py-2 text-sm text-gray-500">
+                                        <div className="px-3 py-2 text-sm text-gray-500">
                       Merhaba, {user.name}
                     </div>
                     
-                    <Link 
-                      href="/appointment" 
-                      className="block px-3 py-2 text-gray-600 hover:text-gray-900 font-medium transition-colors hover:bg-gray-50 rounded-lg"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      Randevu Al
-                    </Link>
-                    {user.role !== 'ADMIN' && (
+                    {user.role === 'USER' && (
+                      <Link 
+                        href="/appointment" 
+                        className="block px-3 py-2 text-gray-600 hover:text-gray-900 font-medium transition-colors hover:bg-gray-50 rounded-lg"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        Randevu Al
+                      </Link>
+                    )}
+                    {user.role === 'USER' && (
                       <Link 
                         href="/dashboard" 
                         className="block px-3 py-2 text-gray-600 hover:text-gray-900 font-medium transition-colors hover:bg-gray-50 rounded-lg"
@@ -226,15 +225,15 @@ export default function Navbar() {
                       Mesajlar
                     </Link>
                     
-                                          {user.role === 'ADMIN' && (
-                        <Link 
-                          href="/admin" 
-                          className="block mx-3 my-2 px-4 py-3 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-900 rounded-lg font-medium hover:from-gray-200 hover:to-gray-300 transition-all shadow-sm"
-                          onClick={() => setIsOpen(false)}
-                        >
-                          Yönetim Paneli
-                        </Link>
-                      )}
+                    {user.role === 'ADMIN' && (
+                      <Link 
+                        href="/admin" 
+                        className="block mx-3 my-2 px-4 py-3 bg-gradient-to-r from-red-100 to-red-200 text-red-900 rounded-lg font-medium hover:from-red-200 hover:to-red-300 transition-all shadow-sm"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        👑 Yönetim Paneli
+                      </Link>
+                    )}
                     
                     <button
                       onClick={() => {

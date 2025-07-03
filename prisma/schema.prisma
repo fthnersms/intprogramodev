@@ -81,6 +81,7 @@ model ContactMessage {
 enum Role {
   USER
   ADMIN
+  DOCTOR
 }
 
 enum AppointmentStatus {

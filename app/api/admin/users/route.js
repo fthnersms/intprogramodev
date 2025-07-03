@@ -17,22 +17,44 @@ export async function GET() {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
     }
 
-    // Get all admin users
-    const admins = await prisma.user.findMany({
-      where: {
-        role: 'ADMIN'
-      },
+    // Check if user is ADMIN
+    const currentUser = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+      select: { role: true }
+    })
+
+    if (!currentUser || currentUser.role !== 'ADMIN') {
+      return NextResponse.json({ 
+        error: 'Bu işlemi yapmaya yetkiniz yok. Sadece admin kullanıcıları erişebilir.' 
+      }, { status: 403 })
+    }
+
+    // Get all users
+    const users = await prisma.user.findMany({
       select: {
         id: true,
         name: true,
         email: true,
-        role: true
-      }
+        phone: true,
+        role: true,
+        createdAt: true,
+        _count: {
+          select: {
+            appointments: true,
+            sentMessages: true,
+            receivedMessages: true
+          }
+        }
+      },
+      orderBy: [
+        { role: 'desc' }, // ADMIN first, then DOCTOR, then USER
+        { createdAt: 'desc' }
+      ]
     })
 
-    return NextResponse.json(admins)
+    return NextResponse.json(users)
   } catch (error) {
-    console.error('Admin users fetch error:', error)
+    console.error('Users fetch error:', error)
     return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 } 
